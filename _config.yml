@@ -306,6 +306,7 @@ auto_excerpt:
   enable: false
   length: 120
 
+excerpt_separator: <!-- more -->
 # Post meta display settings
 post_meta:
   item_text: true
