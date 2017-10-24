@@ -2,4 +2,4 @@
 
 使用NexT模版
 
-![链接]http://theme-next.simpleyyt.com/
+![链接](http://theme-next.simpleyyt.com/)
