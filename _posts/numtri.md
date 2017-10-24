@@ -1,6 +1,6 @@
 ---
 title: (luogu1216)Number Triangle(USACO1.5)
-date: 2017-10-24 11:15:30
+date: 2017-10-24
 categories:
 - solution
 - dp
