@@ -1,5 +1,5 @@
 ---
-title: [luogu1216]数字三角形[USACO1.5]
+title: (luogu1216)Number Triangle(USACO1.5)
 date: 2017-10-24 11:15:30
 categories:
 - solution
