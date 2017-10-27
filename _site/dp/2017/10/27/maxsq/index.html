@@ -83,7 +83,7 @@
 <link href="/assets/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="分治,二进制," />
+  <meta name="keywords" content="dp," />
 
 
 
@@ -109,17 +109,19 @@
 
 
 
-<meta name="description" content="">
-<meta name="keywords" content="分治, 二进制">
+<meta name="description" content="最大正方形 又一个dp的模板">
+<meta name="keywords" content="dp">
 <meta property="og:type" content="article">
-<meta property="og:title" content="(luogu1010)幂次方">
-<meta property="og:url" content="http://localhost:4000/%E5%88%86%E6%B2%BB/%E9%80%92%E5%BD%92/2017/10/24/pow/">
+<meta property="og:title" content="(luogu2701)巨大的牛棚(USACO5.3)">
+<meta property="og:url" content="http://localhost:4000/dp/2017/10/27/maxsq/">
 <meta property="og:site_name" content="Ajil's Blog">
-<meta property="og:description" content="">
+<meta property="og:description" content="最大正方形 又一个dp的模板">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="/assets/images/table.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="(luogu1010)幂次方">
-<meta name="twitter:description" content="">
+<meta name="twitter:title" content="(luogu2701)巨大的牛棚(USACO5.3)">
+<meta name="twitter:description" content="最大正方形 又一个dp的模板">
+<meta name="twitter:image" content="/assets/images/table.png">
 
 
 <script type="text/javascript" id="hexo.configurations">
@@ -152,7 +154,7 @@
 
 
 
-  <title>(luogu1010)幂次方</title>
+  <title>(luogu2701)巨大的牛棚(USACO5.3)</title>
   
 
 
@@ -290,7 +292,7 @@
   
 
   <article class="post post-type- " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://localhost:4000/%E5%88%86%E6%B2%BB/%E9%80%92%E5%BD%92/2017/10/24/pow/">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/dp/2017/10/27/maxsq/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ajil">
@@ -310,7 +312,7 @@
           <h1 class="post-title" itemprop="name headline">
           
           
-            (luogu1010)幂次方
+            (luogu2701)巨大的牛棚(USACO5.3)
           
         </h1>
         
@@ -324,8 +326,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-24T00:00:00+08:00">
-                2017-10-24
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-27T00:00:00+08:00">
+                2017-10-27
               </time>
             
 
@@ -348,26 +350,12 @@
               
                 
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/category/#/%E5%88%86%E6%B2%BB" itemprop="url" rel="index">
-                    <span itemprop="name">分治</span>
+                  <a href="/category/#/dp" itemprop="url" rel="index">
+                    <span itemprop="name">dp</span>
                   </a>
                 </span>
 
                 
-                
-                  ， 
-                
-              
-                
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/category/#/%E9%80%92%E5%BD%92" itemprop="url" rel="index">
-                    <span itemprop="name">递归</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
                 
               
             </span>
@@ -402,40 +390,54 @@
       
 
       
-        <!-- more -->
+        <p>最大正方形</p>
 
-<p>将一个数拆分成二进制, 对次数递归表示, 特殊处理0和2的情况</p>
+<p>又一个dp的模板
+<!-- more --></p>
+<h2 id="题目描述">题目描述:</h2>
+
+<p><strong>在n*n(n&lt;=1000)的矩阵中, 有几个点不能选, 找出当中边长最大的正方形</strong></p>
+
+<h2 id="思路">思路:</h2>
+
+<p>设d(i,j)是以点(i,j)为右下角的最大正方形边长</p>
+
+<p>则有d(i,j) = min{d(i-1,j),d(i,j-1),d(i-1,j-1))+1</p>
+
+<p>即只有当上面, 左边, 左上角都能构成边长为k的正方形时, 点(i,j)才能形成边长为k+1的正方形</p>
+
+<p><img src="/assets/images/table.png" alt="" /></p>
 
 <h2 id="代码">代码:</h2>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;iostream&gt;
-#include &lt;cstdio&gt;
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">nclude</span> <span class="o">&lt;</span><span class="n">iostream</span><span class="o">&gt;</span>
+<span class="cp">#include &lt;cstdio&gt;
+#include &lt;cstring&gt;
 </span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
-<span class="kt">void</span> <span class="nf">pow2</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">n</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span>
-		<span class="n">printf</span><span class="p">(</span><span class="s">"%d"</span><span class="p">,</span><span class="n">n</span><span class="p">);</span>    <span class="c1">//特殊处理0
-</span>	<span class="k">else</span>
-	<span class="p">{</span>
-		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span><span class="n">i</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">;</span><span class="o">--</span><span class="n">i</span><span class="p">)</span>    <span class="c1">//二进制拆分
-</span>			<span class="k">if</span><span class="p">(</span><span class="n">n</span><span class="o">&amp;</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">i</span><span class="p">))</span>
-			<span class="p">{</span>
-				<span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>	<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="p">;</span>    <span class="c1">//特殊处理2
-</span>				<span class="k">else</span>
-				<span class="p">{</span>
-					<span class="n">printf</span><span class="p">(</span><span class="s">"2("</span><span class="p">);</span>
-					<span class="n">pow2</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-					<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="sc">')'</span><span class="p">;</span>
-				<span class="p">}</span>
-				<span class="n">n</span> <span class="o">-=</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="n">i</span><span class="p">);</span>
-				<span class="k">if</span><span class="p">(</span><span class="n">n</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span>	<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="sc">'+'</span><span class="p">;</span>
-			<span class="p">}</span>
-	<span class="p">}</span>
-<span class="p">}</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">Mn</span><span class="p">(</span><span class="mi">1005</span><span class="p">);</span>
+<span class="kt">bool</span> <span class="n">mp</span><span class="p">[</span><span class="n">Mn</span><span class="p">][</span><span class="n">Mn</span><span class="p">];</span>
+<span class="kt">int</span> <span class="n">d</span><span class="p">[</span><span class="n">Mn</span><span class="p">][</span><span class="n">Mn</span><span class="p">];</span>
 <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
-	<span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
-	<span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">n</span><span class="p">;</span>
-	<span class="n">pow2</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="n">n</span><span class="p">,</span><span class="n">t</span><span class="p">;</span>
+	<span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">n</span> <span class="o">&gt;&gt;</span> <span class="n">t</span><span class="p">;</span>
+	<span class="n">memset</span><span class="p">(</span><span class="n">mp</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="k">sizeof</span> <span class="n">mp</span><span class="p">);</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">mp</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mp</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span> <span class="c1">//处理边界
+</span>	<span class="k">while</span><span class="p">(</span><span class="n">t</span><span class="o">--</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="kt">int</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">;</span>
+		<span class="n">scanf</span><span class="p">(</span><span class="s">"%d %d"</span><span class="p">,</span><span class="o">&amp;</span><span class="n">x</span><span class="p">,</span><span class="o">&amp;</span><span class="n">y</span><span class="p">);</span>
+		<span class="n">mp</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="kt">int</span> <span class="n">Max</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">mp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>	
+			<span class="p">{</span>
+				<span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">min</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+				<span class="n">Max</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">Max</span><span class="p">,</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]);</span>
+			<span class="p">}</span>
+	<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">Max</span><span class="p">;</span>
 	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></div>
@@ -469,10 +471,7 @@
         <div class="post-tags">
           
             
-            <a href="/tag/#/%E5%88%86%E6%B2%BB" rel="tag"># 分治</a>
-          
-            
-            <a href="/tag/#/%E4%BA%8C%E8%BF%9B%E5%88%B6" rel="tag"># 二进制</a>
+            <a href="/tag/#/dp" rel="tag"># dp</a>
           
         </div>
       
@@ -488,8 +487,8 @@
         <div class="post-nav" id="post-nav-id">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/solution/%E5%88%86%E6%B2%BB/2017/10/24/rev/" rel="next" title="(luogu1908)逆序对">
-                <i class="fa fa-chevron-left"></i> (luogu1908)逆序对
+              <a href="/dp/2017/10/27/numgame/" rel="next" title="(luogu1043)数字游戏">
+                <i class="fa fa-chevron-left"></i> (luogu1043)数字游戏
               </a>
             
           </div>
@@ -498,8 +497,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/solution/dp/2017/10/24/numtri/" rel="prev" title="(luogu1216)数字三角形(USACO1.5)">
-                (luogu1216)数字三角形(USACO1.5) <i class="fa fa-chevron-right"></i>
+              <a href="/solution/dp/2017/10/27/U10DEC/" rel="prev" title="(luogu3004)宝箱(USACO10DEC)">
+                (luogu3004)宝箱(USACO10DEC) <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -644,7 +643,7 @@
             
               <div class="post-toc-content">
     <ol class=nav>
-      <li class="nav-item nav-level-2"> <a class="nav-link" href="#代码"> <span class="nav-number">1</span> <span class="nav-text">代码:</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child">
+      <li class="nav-item nav-level-2"> <a class="nav-link" href="#题目描述"> <span class="nav-number">1</span> <span class="nav-text">题目描述:</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#思路"> <span class="nav-number">2</span> <span class="nav-text">思路:</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#代码"> <span class="nav-number">3</span> <span class="nav-text">代码:</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child">
     </ol>
   </div>
             

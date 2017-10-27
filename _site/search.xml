@@ -2,6 +2,419 @@
 <search>
   
     <entry>
+      <title><![CDATA[(luogu1043)数字游戏]]></title>
+      <url>/dp/2017/10/27/numgame/</url>
+      <content type="html"><![CDATA[<p>一个新的dp模版
+<!-- more --></p>
+
+<h2 id="题目描述">【题目描述】</h2>
+
+<p><strong>将一圈整数分为m个部分, 使得每个部分的和对10取模后乘积最大</strong></p>
+
+<h2 id="思路">思路:</h2>
+
+<p><strong>化环为链+区间dp</strong></p>
+
+<p>设d(l,r,k)是将区间[l,r]分为k段的最优解</p>
+
+<p>那么就有d(l,r,k)=d(l,c,s)*d(c+1,r,k-s)(l&lt;=c&lt;r, 1&lt;=s&lt;k)</p>
+
+<p>答案为max/min{d(i,i+n-1,m)}(1&lt;=i&lt;=n)</p>
+
+<h2 id="代码">代码:</h2>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;iostream&gt;
+#include &lt;cstdio&gt;
+#include &lt;cstring&gt;
+#include &lt;climits&gt;
+#include &lt;algorithm&gt;
+</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">Mn</span><span class="p">(</span><span class="mi">115</span><span class="p">);</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">Mm</span><span class="p">(</span><span class="mi">15</span><span class="p">);</span>
+<span class="kt">int</span> <span class="n">s</span><span class="p">[</span><span class="n">Mn</span><span class="p">];</span>
+<span class="kt">long</span> <span class="kt">long</span> <span class="n">dmn</span><span class="p">[</span><span class="n">Mn</span><span class="p">][</span><span class="n">Mn</span><span class="p">][</span><span class="n">Mm</span><span class="p">],</span><span class="n">dmx</span><span class="p">[</span><span class="n">Mn</span><span class="p">][</span><span class="n">Mn</span><span class="p">][</span><span class="n">Mm</span><span class="p">];</span>
+<span class="kt">long</span> <span class="kt">long</span> <span class="nf">fmn</span><span class="p">(</span><span class="kt">int</span> <span class="n">l</span><span class="p">,</span><span class="kt">int</span> <span class="n">r</span><span class="p">,</span><span class="kt">int</span> <span class="n">k</span><span class="p">)</span> <span class="c1">//最大值
+</span><span class="p">{</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">dmn</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">r</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">!=-</span><span class="mi">1</span><span class="p">)</span>	<span class="k">return</span> <span class="n">dmn</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">r</span><span class="p">][</span><span class="n">k</span><span class="p">];</span>
+	<span class="k">else</span>
+	<span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">k</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
+		<span class="p">{</span>
+		    <span class="kt">int</span> <span class="n">ans</span><span class="p">((</span><span class="n">s</span><span class="p">[</span><span class="n">r</span><span class="p">]</span><span class="o">-</span><span class="n">s</span><span class="p">[</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">%</span><span class="mi">10</span><span class="p">);</span>
+		    <span class="k">if</span> <span class="p">(</span><span class="n">ans</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span>  <span class="n">ans</span> <span class="o">+=</span> <span class="mi">10</span><span class="p">;</span>
+		    <span class="k">return</span> <span class="n">dmn</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">r</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">ans</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">else</span>
+		<span class="p">{</span>
+			<span class="kt">long</span> <span class="kt">long</span> <span class="n">ans</span><span class="p">(</span><span class="n">INT_MAX</span><span class="p">);</span>
+			<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">c</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="n">c</span><span class="o">&lt;</span><span class="n">r</span><span class="p">;</span><span class="o">++</span><span class="n">c</span><span class="p">)</span>
+				<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">ks</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">ks</span><span class="o">&lt;</span><span class="n">k</span><span class="p">;</span><span class="o">++</span><span class="n">ks</span><span class="p">)</span>
+				<span class="p">{</span>
+					<span class="k">if</span><span class="p">(</span><span class="n">ks</span><span class="o">&lt;=</span><span class="n">c</span><span class="o">-</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">k</span><span class="o">-</span><span class="n">ks</span><span class="o">&lt;=</span><span class="n">r</span><span class="o">-</span><span class="n">c</span><span class="p">)</span>
+					<span class="n">ans</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">ans</span><span class="p">,</span><span class="n">fmn</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">ks</span><span class="p">)</span><span class="o">*</span><span class="n">fmn</span><span class="p">(</span><span class="n">c</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">k</span><span class="o">-</span><span class="n">ks</span><span class="p">));</span>
+				<span class="p">}</span>
+			<span class="k">return</span> <span class="n">dmn</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">r</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">ans</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+<span class="kt">long</span> <span class="kt">long</span> <span class="nf">fmx</span><span class="p">(</span><span class="kt">int</span> <span class="n">l</span><span class="p">,</span><span class="kt">int</span> <span class="n">r</span><span class="p">,</span><span class="kt">int</span> <span class="n">k</span><span class="p">)</span> <span class="c1">//最小值
+</span><span class="p">{</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">dmx</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">r</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">!=-</span><span class="mi">1</span><span class="p">)</span>	<span class="k">return</span> <span class="n">dmx</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">r</span><span class="p">][</span><span class="n">k</span><span class="p">];</span>
+	<span class="k">else</span>
+	<span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">k</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
+		<span class="p">{</span>
+		    <span class="kt">int</span> <span class="n">ans</span><span class="p">((</span><span class="n">s</span><span class="p">[</span><span class="n">r</span><span class="p">]</span><span class="o">-</span><span class="n">s</span><span class="p">[</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">%</span><span class="mi">10</span><span class="p">);</span>
+		    <span class="k">if</span> <span class="p">(</span><span class="n">ans</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span>  <span class="n">ans</span> <span class="o">+=</span> <span class="mi">10</span><span class="p">;</span>
+		    <span class="k">return</span> <span class="n">dmx</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">r</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">ans</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">else</span>
+		<span class="p">{</span>
+			<span class="kt">long</span> <span class="kt">long</span> <span class="n">ans</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+			<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">c</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="n">c</span><span class="o">&lt;</span><span class="n">r</span><span class="p">;</span><span class="o">++</span><span class="n">c</span><span class="p">)</span>
+				<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">ks</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">ks</span><span class="o">&lt;</span><span class="n">k</span><span class="p">;</span><span class="o">++</span><span class="n">ks</span><span class="p">)</span>
+				<span class="p">{</span>
+					<span class="k">if</span><span class="p">(</span><span class="n">ks</span><span class="o">&lt;=</span><span class="n">c</span><span class="o">-</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">k</span><span class="o">-</span><span class="n">ks</span><span class="o">&lt;=</span><span class="n">r</span><span class="o">-</span><span class="n">c</span><span class="p">)</span>
+					<span class="n">ans</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">ans</span><span class="p">,</span><span class="n">fmx</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">ks</span><span class="p">)</span><span class="o">*</span><span class="n">fmx</span><span class="p">(</span><span class="n">c</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">r</span><span class="p">,</span><span class="n">k</span><span class="o">-</span><span class="n">ks</span><span class="p">));</span>
+				<span class="p">}</span>
+			<span class="k">return</span> <span class="n">dmx</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">r</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">ans</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">n</span><span class="p">,</span><span class="n">m</span><span class="p">;</span>
+	<span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">n</span> <span class="o">&gt;&gt;</span> <span class="n">m</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">scanf</span><span class="p">(</span><span class="s">"%d"</span><span class="p">,</span><span class="n">s</span><span class="o">+</span><span class="n">i</span><span class="p">),</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">n</span><span class="p">]</span><span class="o">=</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+	<span class="n">memset</span><span class="p">(</span><span class="n">dmn</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="k">sizeof</span> <span class="n">dmn</span><span class="p">);</span>
+	<span class="n">memset</span><span class="p">(</span><span class="n">dmx</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="k">sizeof</span> <span class="n">dmx</span><span class="p">);</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>	<span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span> <span class="c1">//前缀和优化区间和
+</span>	<span class="kt">long</span> <span class="kt">long</span> <span class="n">Min</span><span class="p">(</span><span class="n">INT_MAX</span><span class="p">),</span><span class="n">Max</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="c1">//寻找最优解
+</span>	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="n">Min</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">Min</span><span class="p">,</span><span class="n">fmn</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="p">));</span>
+		<span class="n">Max</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">Max</span><span class="p">,</span><span class="n">fmx</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">m</span><span class="p">));</span>
+	<span class="p">}</span>
+	<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">Min</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span> <span class="o">&lt;&lt;</span> <span class="n">Max</span><span class="p">;</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+]]></content>
+      <categories>
+        
+          <category> dp </category>
+        
+      </categories>
+      <tags>
+        
+          <tag> dp </tag>
+        
+          <tag> 区间dp </tag>
+        
+          <tag> 环状区间 </tag>
+        
+      </tags>
+      <tags></tags>
+    </entry>
+  
+    <entry>
+      <title><![CDATA[(luogu2701)巨大的牛棚(USACO5.3)]]></title>
+      <url>/dp/2017/10/27/maxsq/</url>
+      <content type="html"><![CDATA[<p>最大正方形</p>
+
+<p>又一个dp的模板
+<!-- more --></p>
+<h2 id="题目描述">题目描述:</h2>
+
+<p><strong>在n*n(n&lt;=1000)的矩阵中, 有几个点不能选, 找出当中边长最大的正方形</strong></p>
+
+<h2 id="思路">思路:</h2>
+
+<p>设d(i,j)是以点(i,j)为右下角的最大正方形边长</p>
+
+<p>则有d(i,j) = min{d(i-1,j),d(i,j-1),d(i-1,j-1))+1</p>
+
+<p>即只有当上面, 左边, 左上角都能构成边长为k的正方形时, 点(i,j)才能形成边长为k+1的正方形</p>
+
+<p><img src="/assets/images/table.png" alt="" /></p>
+
+<h2 id="代码">代码:</h2>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">nclude</span> <span class="o">&lt;</span><span class="n">iostream</span><span class="o">&gt;</span>
+<span class="cp">#include &lt;cstdio&gt;
+#include &lt;cstring&gt;
+</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">Mn</span><span class="p">(</span><span class="mi">1005</span><span class="p">);</span>
+<span class="kt">bool</span> <span class="n">mp</span><span class="p">[</span><span class="n">Mn</span><span class="p">][</span><span class="n">Mn</span><span class="p">];</span>
+<span class="kt">int</span> <span class="n">d</span><span class="p">[</span><span class="n">Mn</span><span class="p">][</span><span class="n">Mn</span><span class="p">];</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">n</span><span class="p">,</span><span class="n">t</span><span class="p">;</span>
+	<span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">n</span> <span class="o">&gt;&gt;</span> <span class="n">t</span><span class="p">;</span>
+	<span class="n">memset</span><span class="p">(</span><span class="n">mp</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="k">sizeof</span> <span class="n">mp</span><span class="p">);</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">mp</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mp</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span> <span class="c1">//处理边界
+</span>	<span class="k">while</span><span class="p">(</span><span class="n">t</span><span class="o">--</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="kt">int</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">;</span>
+		<span class="n">scanf</span><span class="p">(</span><span class="s">"%d %d"</span><span class="p">,</span><span class="o">&amp;</span><span class="n">x</span><span class="p">,</span><span class="o">&amp;</span><span class="n">y</span><span class="p">);</span>
+		<span class="n">mp</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="kt">int</span> <span class="n">Max</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">mp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>	
+			<span class="p">{</span>
+				<span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">min</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+				<span class="n">Max</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">Max</span><span class="p">,</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]);</span>
+			<span class="p">}</span>
+	<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">Max</span><span class="p">;</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+]]></content>
+      <categories>
+        
+          <category> dp </category>
+        
+      </categories>
+      <tags>
+        
+          <tag> dp </tag>
+        
+      </tags>
+      <tags></tags>
+    </entry>
+  
+    <entry>
+      <title><![CDATA[(luogu3004)宝箱(USACO10DEC)]]></title>
+      <url>/solution/dp/2017/10/27/U10DEC/</url>
+      <content type="html"><![CDATA[<p>一道dp的博弈题
+<!-- more --></p>
+
+<h2 id="题目描述">【题目描述】</h2>
+
+<p><strong>n个硬币排成一行, 每个硬币有一个价值Ci, 两个人轮流取硬币</strong></p>
+
+<p><strong>规定每个人每次只能拿走剩余硬币中最左边或最右边的硬币, 若硬币全部取完, 游戏结束</strong></p>
+
+<p><strong>求当两边都完美操作时先手能取得的硬币总和的最大值</strong></p>
+
+<h2 id="思路">思路:</h2>
+
+<p><strong>区间dp</strong></p>
+
+<p>设d(l,r)为在区间[l,r]上的最优解, 则对手的最优解为d(l+1,r)和d(l,r-1)的最大值</p>
+
+<p>那么就有<strong>d(l,r) = max(sum(l,r)-d(l+1,r),sum(l,r)-d(l,r-1))</strong></p>
+
+<p>即在对手剩下的局面中选择最优解</p>
+
+<p>由于要求先手的最优解, 所以答案为d(1,n)</p>
+
+<h2 id="代码实现">代码实现:</h2>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;iostream&gt;
+#include &lt;cstdio&gt;
+#include &lt;algorithm&gt;
+</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">Mn</span><span class="p">(</span><span class="mi">5005</span><span class="p">);</span>
+<span class="kt">int</span> <span class="n">d</span><span class="p">[</span><span class="n">Mn</span><span class="p">][</span><span class="n">Mn</span><span class="p">];</span>
+<span class="kt">int</span> <span class="n">s</span><span class="p">[</span><span class="n">Mn</span><span class="p">];</span> <span class="c1">//前缀和优化区间和
+</span><span class="kt">int</span> <span class="nf">f</span><span class="p">(</span><span class="kt">int</span> <span class="n">l</span><span class="p">,</span><span class="kt">int</span> <span class="n">r</span><span class="p">)</span> <span class="c1">//记忆化搜索
+</span><span class="p">{</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">r</span><span class="p">])</span>	<span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">r</span><span class="p">];</span>
+	<span class="k">else</span>
+	<span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">l</span><span class="o">==</span><span class="n">r</span><span class="p">)</span>	<span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">r</span><span class="p">]</span><span class="o">-</span><span class="n">s</span><span class="p">[</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+		<span class="k">else</span>
+			<span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">r</span><span class="p">]</span><span class="o">-</span><span class="n">s</span><span class="p">[</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">f</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">r</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="n">s</span><span class="p">[</span><span class="n">r</span><span class="p">]</span><span class="o">-</span><span class="n">s</span><span class="p">[</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">f</span><span class="p">(</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">r</span><span class="p">));</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+	<span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">n</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">scanf</span><span class="p">(</span><span class="s">"%d"</span><span class="p">,</span><span class="o">&amp;</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+=</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+	<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">n</span><span class="p">);</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+]]></content>
+      <categories>
+        
+          <category> solution </category>
+        
+          <category> dp </category>
+        
+      </categories>
+      <tags>
+        
+          <tag> dp </tag>
+        
+          <tag> 区间dp </tag>
+        
+          <tag> 博弈 </tag>
+        
+      </tags>
+      <tags></tags>
+    </entry>
+  
+    <entry>
+      <title><![CDATA[(luogu3916)图的遍历]]></title>
+      <url>/solution/%E5%9B%BE%E8%AE%BA/scc/dp/2017/10/26/gra_erg/</url>
+      <content type="html"><![CDATA[<p>有的题看似简单实则不易
+<!-- more --></p>
+
+<h2 id="题目描述">【题目描述】</h2>
+
+<p><strong>给出n个点, m条边的有向图, 对于每个点v, 求从v出发能到达的编号最大的点</strong></p>
+
+<h2 id="输入输出">【输入输出】</h2>
+
+<h3 id="输入格式">输入格式：</h3>
+
+<p><strong>第一行为两个整数n,m</strong></p>
+
+<p><strong>接下来m行, 每行2个整数u,v, 表示u到v有条有向边, 点用1到n的数字编号</strong></p>
+
+<h3 id="输出格式">输出格式:</h3>
+
+<p><strong>n个整数, 表示从i能到达的最大编号的结点</strong></p>
+
+<h2 id="思路">思路:</h2>
+
+<p>一开始想用dp解决, 但WA了6个点</p>
+
+<p>后来发现这张图不一定是DAG, 无法直接使用dp</p>
+
+<p>于是就只能先用tarjan把图缩成DAG, 再用dp解决</p>
+
+<p>(貌似题解中说可以反向bfs, 没试过所以没有代码)</p>
+
+<h2 id="代码">代码:</h2>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;iostream&gt;
+#include &lt;cstdio&gt;
+#include &lt;stack&gt;
+#include &lt;algorithm&gt;
+</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">Mn</span><span class="p">(</span><span class="mi">100005</span><span class="p">);</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">Mm</span><span class="p">(</span><span class="mi">100005</span><span class="p">);</span>
+<span class="kt">int</span> <span class="n">n</span><span class="p">,</span><span class="n">m</span><span class="p">;</span>
+<span class="k">struct</span> <span class="n">edge</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">e</span><span class="p">;</span>
+	<span class="n">edge</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="p">}</span><span class="o">*</span><span class="n">v</span><span class="p">[</span><span class="n">Mn</span><span class="p">],</span><span class="n">E</span><span class="p">[</span><span class="n">Mm</span><span class="p">];</span> <span class="c1">//边表
+</span><span class="n">edge</span> <span class="o">*</span><span class="n">vd</span><span class="p">[</span><span class="n">Mn</span><span class="p">],</span><span class="n">Ed</span><span class="p">[</span><span class="n">Mm</span><span class="p">];</span>
+<span class="kt">int</span> <span class="n">t</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">scn</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="kt">int</span> <span class="n">pre</span><span class="p">[</span><span class="n">Mn</span><span class="p">],</span><span class="n">low</span><span class="p">[</span><span class="n">Mn</span><span class="p">],</span><span class="n">scc</span><span class="p">[</span><span class="n">Mn</span><span class="p">],</span><span class="n">f</span><span class="p">[</span><span class="n">Mn</span><span class="p">];</span>
+<span class="n">stack</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">S</span><span class="p">;</span>
+<span class="kt">int</span> <span class="nf">tar</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">pre</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="o">++</span><span class="n">t</span><span class="p">;</span>
+	<span class="n">low</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="p">;</span>
+	<span class="n">S</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">edge</span><span class="o">*</span> <span class="n">e</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">x</span><span class="p">]);</span><span class="n">e</span><span class="p">;</span><span class="n">e</span><span class="o">=</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">pre</span><span class="p">[</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">])</span>
+		<span class="p">{</span>
+			<span class="n">tar</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">);</span>
+			<span class="n">low</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">low</span><span class="p">[</span><span class="n">x</span><span class="p">],</span><span class="n">low</span><span class="p">[</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">]);</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">scc</span><span class="p">[</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">])</span>
+			<span class="n">low</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">low</span><span class="p">[</span><span class="n">x</span><span class="p">],</span><span class="n">pre</span><span class="p">[</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">]);</span>
+	<span class="p">}</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">pre</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">==</span><span class="n">low</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+	<span class="p">{</span>
+		<span class="o">++</span><span class="n">scn</span><span class="p">;</span>
+		<span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="kt">int</span> <span class="n">u</span><span class="p">(</span><span class="n">S</span><span class="p">.</span><span class="n">top</span><span class="p">());</span> <span class="n">S</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+			<span class="n">scc</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">scn</span><span class="p">;</span>
+			<span class="n">f</span><span class="p">[</span><span class="n">scn</span><span class="p">]</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">scn</span><span class="p">],</span><span class="n">u</span><span class="p">);</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">x</span><span class="o">==</span><span class="n">u</span><span class="p">)</span>	<span class="k">break</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+<span class="kt">int</span> <span class="n">sin</span><span class="p">[</span><span class="n">Mn</span><span class="p">];</span>
+<span class="kt">int</span> <span class="n">topo</span><span class="p">[</span><span class="n">Mn</span><span class="p">],</span><span class="n">d</span><span class="p">[</span><span class="n">Mn</span><span class="p">];</span>
+<span class="kt">int</span> <span class="nf">mdfs</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="c1">//记忆化搜索
+</span><span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>    <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+	<span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">edge</span><span class="o">*</span> <span class="n">e</span><span class="p">(</span><span class="n">vd</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span><span class="n">e</span><span class="p">;</span><span class="n">e</span><span class="o">=</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span>
+		<span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">mdfs</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">));</span>
+	<span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">n</span> <span class="o">&gt;&gt;</span> <span class="n">m</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">m</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="kt">int</span> <span class="n">s</span><span class="p">,</span><span class="n">e</span><span class="p">;</span>
+		<span class="n">scanf</span><span class="p">(</span><span class="s">"%d %d"</span><span class="p">,</span><span class="o">&amp;</span><span class="n">s</span><span class="p">,</span><span class="o">&amp;</span><span class="n">e</span><span class="p">);</span> <span class="c1">//读入图
+</span>		<span class="n">E</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">e</span> <span class="o">=</span> <span class="n">e</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">next</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">s</span><span class="p">];</span>
+		<span class="n">v</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">E</span><span class="o">+</span><span class="n">i</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">pre</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>	<span class="n">tar</span><span class="p">(</span><span class="n">i</span><span class="p">);</span> <span class="c1">//tarjan找scc
+</span>	<span class="cm">/*----缩点----*/</span>
+	<span class="kt">int</span> <span class="n">ecn</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="k">for</span><span class="p">(</span><span class="n">edge</span><span class="o">*</span> <span class="n">e</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span><span class="n">e</span><span class="p">;</span><span class="n">e</span><span class="o">=</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">scc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">!=</span><span class="n">scc</span><span class="p">[</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">])</span>
+			<span class="p">{</span>
+				<span class="o">++</span><span class="n">sin</span><span class="p">[</span><span class="n">scc</span><span class="p">[</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">]];</span>
+				<span class="n">Ed</span><span class="p">[</span><span class="o">++</span><span class="n">ecn</span><span class="p">].</span><span class="n">e</span><span class="o">=</span><span class="n">scc</span><span class="p">[</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">],</span> <span class="n">Ed</span><span class="p">[</span><span class="n">ecn</span><span class="p">].</span><span class="n">next</span><span class="o">=</span><span class="n">vd</span><span class="p">[</span><span class="n">scc</span><span class="p">[</span><span class="n">i</span><span class="p">]];</span>
+				<span class="n">vd</span><span class="p">[</span><span class="n">scc</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Ed</span><span class="o">+</span><span class="n">ecn</span><span class="p">;</span>
+			<span class="p">}</span>
+	<span class="cm">/*--------*/</span>
+	<span class="cm">/*----拓扑排序并dp----*/</span>
+	<span class="kt">int</span> <span class="n">h</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="n">t</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">scn</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">sin</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>	<span class="n">topo</span><span class="p">[</span><span class="n">t</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+	<span class="k">while</span><span class="p">(</span><span class="n">h</span><span class="o">!=</span><span class="n">t</span><span class="p">)</span>
+	<span class="p">{</span>
+		<span class="k">for</span><span class="p">(</span><span class="n">edge</span><span class="o">*</span> <span class="n">e</span><span class="p">(</span><span class="n">vd</span><span class="p">[</span><span class="n">topo</span><span class="p">[</span><span class="n">h</span><span class="p">]]);</span><span class="n">e</span><span class="p">;</span><span class="n">e</span><span class="o">=</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="o">--</span><span class="n">sin</span><span class="p">[</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">];</span>
+			<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">sin</span><span class="p">[</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">])</span>	<span class="n">topo</span><span class="p">[</span><span class="n">t</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="o">++</span><span class="n">h</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">;</span><span class="o">--</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">mdfs</span><span class="p">(</span><span class="n">i</span><span class="p">);</span> <span class="c1">//按照拓扑逆序dp
+</span>	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">d</span><span class="p">[</span><span class="n">scc</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">&lt;&lt;</span> <span class="s">" "</span><span class="p">;</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>(所以说有些题目还是没有想象中的那么简单啊…)</p>
+]]></content>
+      <categories>
+        
+          <category> solution </category>
+        
+          <category> 图论 </category>
+        
+          <category> scc </category>
+        
+          <category> dp </category>
+        
+      </categories>
+      <tags>
+        
+          <tag> 图论 </tag>
+        
+          <tag> dp </tag>
+        
+          <tag> tarjan </tag>
+        
+      </tags>
+      <tags></tags>
+    </entry>
+  
+    <entry>
       <title><![CDATA[拓扑排序及应用]]></title>
       <url>/2017/10/25/topo-sort/</url>
       <content type="html"><![CDATA[<!-- more -->
@@ -146,7 +559,11 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<h2 id="scc的作用">scc的作用:</h2>
+<h2 id="tarjan算法的作用">tarjan算法的作用:</h2>
+
+<p>首先, scc是由一个或多个环组成的, 可以用tarjan来寻找有向图中的环</p>
+
+<p>最主要的是, 将有向图缩点形成的scc图是一个DAG, 对于有向非DAG的最优解, 可以先用tarjan将图缩成DAG, 然后使用dp解决</p>
 ]]></content>
       <categories>
         
