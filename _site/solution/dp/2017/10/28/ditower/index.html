@@ -83,7 +83,7 @@
 <link href="/assets/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="图论,拓扑排序,DAG,dp," />
+  <meta name="keywords" content="dp," />
 
 
 
@@ -109,17 +109,17 @@
 
 
 
-<meta name="description" content="">
-<meta name="keywords" content="图论, 拓扑排序, DAG, dp">
+<meta name="description" content="一道经典神题">
+<meta name="keywords" content="dp">
 <meta property="og:type" content="article">
-<meta property="og:title" content="拓扑排序及应用">
-<meta property="og:url" content="http://localhost:4000/2017/10/25/topo-sort/">
+<meta property="og:title" content="(vijos1037)搭建双塔">
+<meta property="og:url" content="http://localhost:4000/solution/dp/2017/10/28/ditower/">
 <meta property="og:site_name" content="Ajil's Blog">
-<meta property="og:description" content="">
+<meta property="og:description" content="一道经典神题">
 <meta property="og:locale" content="zh-Hans">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="拓扑排序及应用">
-<meta name="twitter:description" content="">
+<meta name="twitter:title" content="(vijos1037)搭建双塔">
+<meta name="twitter:description" content="一道经典神题">
 
 
 <script type="text/javascript" id="hexo.configurations">
@@ -152,7 +152,7 @@
 
 
 
-  <title>拓扑排序及应用</title>
+  <title>(vijos1037)搭建双塔</title>
   
 
 
@@ -290,7 +290,7 @@
   
 
   <article class="post post-type- " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://localhost:4000/2017/10/25/topo-sort/">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/solution/dp/2017/10/28/ditower/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="ajil">
@@ -310,7 +310,7 @@
           <h1 class="post-title" itemprop="name headline">
           
           
-            拓扑排序及应用
+            (vijos1037)搭建双塔
           
         </h1>
         
@@ -324,8 +324,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-25T00:00:00+08:00">
-                2017-10-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-28T00:00:00+08:00">
+                2017-10-28
               </time>
             
 
@@ -334,6 +334,43 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/category/#/solution" itemprop="url" rel="index">
+                    <span itemprop="name">solution</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/category/#/dp" itemprop="url" rel="index">
+                    <span itemprop="name">dp</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+            </span>
           
 
           
@@ -365,78 +402,55 @@
       
 
       
-        <!-- more -->
-<h2 id="什么是拓扑排序">什么是拓扑排序:</h2>
+        <p>一道经典神题
+<!-- more --></p>
+<h2 id="题目描述">题目描述:</h2>
 
-<p>对于一个有向图G, 如果存在一种结点的序列, 使得对于每条边(u, v), 都有u在v的前面, 则这个顺序叫做拓扑序, 给图排拓扑序的过程即是拓扑排序</p>
+<p><strong>给出n(1&lt;=n&lt;=100)个水晶的高度, 用这些水晶搭建两座高度相同的塔, 求塔的最大高度(无解输出”Impossible”)</strong></p>
 
-<p><strong>显然, 只有DAG才存在拓扑序。</strong></p>
+<h2 id="思路">思路:</h2>
 
-<h2 id="如何进行拓扑排序">如何进行拓扑排序:</h2>
+<p><strong>动规</strong></p>
 
-<p>有两种方法:</p>
+<p>用d(i,j)表示用前i个水晶, 两塔高度差为j时两塔中高塔的最大高度</p>
 
-<p><strong>1.dfs:</strong></p>
+<p>转移方程见代码</p>
 
-<p>dfs遍历DAG, 并在遍历完后将结点放在当前序列的首部</p>
+<p>答案为d(n,0)</p>
 
-<p><strong>—-代码—-(来自紫书)</strong></p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">c</span><span class="p">[</span><span class="n">Mn</span><span class="p">];</span>
-<span class="kt">int</span> <span class="n">topo</span><span class="p">[</span><span class="n">Mn</span><span class="p">],</span> <span class="n">t</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
-<span class="kt">bool</span> <span class="n">dfs</span>
+<p>当d(n,0)==0时输出Impossible</p>
+
+<h2 id="代码">代码:</h2>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;iostream&gt;
+#include &lt;cstdio&gt;
+#include &lt;cstring&gt;
+</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">Mn</span><span class="p">(</span><span class="mi">105</span><span class="p">);</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">Mm</span><span class="p">(</span><span class="mi">2005</span><span class="p">);</span>
+<span class="kt">int</span> <span class="n">d</span><span class="p">[</span><span class="n">Mn</span><span class="p">][</span><span class="n">Mm</span><span class="p">];</span>
+<span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="n">Mn</span><span class="p">];</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
 <span class="p">{</span>
-	<span class="n">c</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="c1">//访问标志
-</span>	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="n">v</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">v</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="k">if</span><span class="p">(</span><span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">)</span>
+	<span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+	<span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">n</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="c1">//最大高度差 
+</span>	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">scanf</span><span class="p">(</span><span class="s">"%d"</span><span class="p">,</span><span class="n">a</span><span class="o">+</span><span class="n">i</span><span class="p">),</span><span class="n">sum</span><span class="o">+=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+	<span class="n">memset</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="mh">0xc0</span><span class="p">,</span><span class="k">sizeof</span> <span class="n">d</span><span class="p">);</span> <span class="c1">//初始化为极小值 
+</span>	<span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">sum</span><span class="p">;</span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
 		<span class="p">{</span>
-			<span class="k">if</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span>	<span class="k">return</span> <span class="nb">false</span><span class="p">;</span> <span class="c1">//存在有向环, 排序失败
-</span>			<span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">c</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">dfs</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
-	<span class="p">}</span>
-	<span class="n">c</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">topo</span><span class="p">[</span><span class="o">--</span><span class="n">t</span><span class="p">]</span><span class="o">=</span><span class="n">u</span><span class="p">;</span>
-	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+			<span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">];</span> <span class="c1">//不使用水晶 
+</span>			<span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]]);</span> <span class="c1">//使用水晶搭在矮塔上, 矮塔还是矮塔 
+</span>			<span class="k">if</span><span class="p">(</span><span class="n">j</span><span class="o">&gt;=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>	<span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">+</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span> <span class="c1">//使用水晶搭在高塔上 
+</span>			<span class="k">if</span><span class="p">(</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>	<span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">j</span><span class="p">);</span> <span class="c1">//使用水晶搭在矮塔上, 矮塔变高塔 
+</span>		<span class="p">}</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span>	<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Impossible"</span><span class="p">;</span> <span class="c1">//当最终建成高度为0时, 塔不存在 
+</span>	<span class="k">else</span>			<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">d</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </code></pre></div></div>
-
-<p><strong>2.bfs:</strong></p>
-
-<p>运用一个队列, 删除在队头的结点， 并寻找入度为0的点入队</p>
-
-<p><strong>—-代码—-</strong></p>
-<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">topo</span><span class="p">[</span><span class="n">Mn</span><span class="p">];</span>
-<span class="kt">int</span> <span class="n">in</span><span class="p">[</span><span class="n">Mn</span><span class="p">];</span> <span class="c1">//入度
-</span><span class="kt">int</span> <span class="n">h</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="n">t</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
-	<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">in</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>	<span class="n">topo</span><span class="p">[</span><span class="n">t</span><span class="o">++</span><span class="p">]</span><span class="o">=</span><span class="n">i</span><span class="p">;</span>
-<span class="k">while</span><span class="p">(</span><span class="n">h</span><span class="o">!=</span><span class="n">t</span><span class="p">)</span>
-<span class="p">{</span>
-	<span class="k">for</span><span class="p">(</span><span class="n">edge</span><span class="o">*</span> <span class="n">e</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">topo</span><span class="p">[</span><span class="n">h</span><span class="p">]]);</span><span class="n">e</span><span class="p">;</span><span class="n">e</span><span class="o">=</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span>
-	<span class="p">{</span>
-		<span class="o">--</span><span class="n">in</span><span class="p">[</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">];</span>
-		<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">in</span><span class="p">[</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">])</span>
-			<span class="n">topo</span><span class="p">[</span><span class="n">t</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">-&gt;</span><span class="n">e</span><span class="p">;</span>
-	<span class="p">}</span>
-	<span class="o">++</span><span class="n">h</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<h2 id="拓扑排序的作用">拓扑排序的作用:</h2>
-
-<p>首先, 拓扑序可以用来定任务的起始时间, 这也是一般书上讲的东西</p>
-
-<p>其次, 拓扑序<strong>可以判定一个有向图是不是DAG</strong></p>
-
-<p>因为<strong>有且只有DAG才存在拓扑序</strong></p>
-
-<p>那么, 如果将DAG的性质和定序结合起来会怎么样?</p>
-
-<p>我们知道, <strong>DAG与dp有密不可分的关系</strong></p>
-
-<p>而拓扑序可以给出DAG的处理顺序…</p>
-
-<p>也就是说, <strong>拓扑序可以给出DAG上dp的计算顺序</strong></p>
-
-<p>这也是一般DAG上dp的优化思路</p>
 
       
     </div>
@@ -467,15 +481,6 @@
         <div class="post-tags">
           
             
-            <a href="/tag/#/%E5%9B%BE%E8%AE%BA" rel="tag"># 图论</a>
-          
-            
-            <a href="/tag/#/%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F" rel="tag"># 拓扑排序</a>
-          
-            
-            <a href="/tag/#/DAG" rel="tag"># DAG</a>
-          
-            
             <a href="/tag/#/dp" rel="tag"># dp</a>
           
         </div>
@@ -492,18 +497,14 @@
         <div class="post-nav" id="post-nav-id">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/solution/%E5%9B%BE%E8%AE%BA/scc/dp/2017/10/26/gra_erg/" rel="next" title="(luogu3916)图的遍历">
-                <i class="fa fa-chevron-left"></i> (luogu3916)图的遍历
-              </a>
-            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/note/%E5%9B%BE%E8%AE%BA/tarjan/2017/10/25/tarjan/" rel="prev" title="tarjan求scc及其应用">
-                tarjan求scc及其应用 <i class="fa fa-chevron-right"></i>
+              <a href="/solution/dp/2017/10/27/numgame/" rel="prev" title="(luogu1043)数字游戏">
+                (luogu1043)数字游戏 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -582,7 +583,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-count">12</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -593,7 +594,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -648,7 +649,7 @@
             
               <div class="post-toc-content">
     <ol class=nav>
-      <li class="nav-item nav-level-2"> <a class="nav-link" href="#什么是拓扑排序"> <span class="nav-number">1</span> <span class="nav-text">什么是拓扑排序:</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#如何进行拓扑排序"> <span class="nav-number">2</span> <span class="nav-text">如何进行拓扑排序:</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#拓扑排序的作用"> <span class="nav-number">3</span> <span class="nav-text">拓扑排序的作用:</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child">
+      <li class="nav-item nav-level-2"> <a class="nav-link" href="#题目描述"> <span class="nav-number">1</span> <span class="nav-text">题目描述:</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#思路"> <span class="nav-number">2</span> <span class="nav-text">思路:</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#代码"> <span class="nav-number">3</span> <span class="nav-text">代码:</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child">
     </ol>
   </div>
             

@@ -2,8 +2,76 @@
 <search>
   
     <entry>
+      <title><![CDATA[(vijos1037)搭建双塔]]></title>
+      <url>/solution/dp/2017/10/28/ditower/</url>
+      <content type="html"><![CDATA[<p>一道经典神题
+<!-- more --></p>
+<h2 id="题目描述">题目描述:</h2>
+
+<p><strong>给出n(1&lt;=n&lt;=100)个水晶的高度, 用这些水晶搭建两座高度相同的塔, 求塔的最大高度(无解输出”Impossible”)</strong></p>
+
+<h2 id="思路">思路:</h2>
+
+<p><strong>动规</strong></p>
+
+<p>用d(i,j)表示用前i个水晶, 两塔高度差为j时两塔中高塔的最大高度</p>
+
+<p>转移方程见代码</p>
+
+<p>答案为d(n,0)</p>
+
+<p>当d(n,0)==0时输出Impossible</p>
+
+<h2 id="代码">代码:</h2>
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;iostream&gt;
+#include &lt;cstdio&gt;
+#include &lt;cstring&gt;
+</span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">Mn</span><span class="p">(</span><span class="mi">105</span><span class="p">);</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">Mm</span><span class="p">(</span><span class="mi">2005</span><span class="p">);</span>
+<span class="kt">int</span> <span class="n">d</span><span class="p">[</span><span class="n">Mn</span><span class="p">][</span><span class="n">Mm</span><span class="p">];</span>
+<span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="n">Mn</span><span class="p">];</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">n</span><span class="p">;</span>
+	<span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">n</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="c1">//最大高度差 
+</span>	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">scanf</span><span class="p">(</span><span class="s">"%d"</span><span class="p">,</span><span class="n">a</span><span class="o">+</span><span class="n">i</span><span class="p">),</span><span class="n">sum</span><span class="o">+=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+	<span class="n">memset</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="mh">0xc0</span><span class="p">,</span><span class="k">sizeof</span> <span class="n">d</span><span class="p">);</span> <span class="c1">//初始化为极小值 
+</span>	<span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="n">i</span><span class="o">&lt;=</span><span class="n">n</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">sum</span><span class="p">;</span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+		<span class="p">{</span>
+			<span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">];</span> <span class="c1">//不使用水晶 
+</span>			<span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">+</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]]);</span> <span class="c1">//使用水晶搭在矮塔上, 矮塔还是矮塔 
+</span>			<span class="k">if</span><span class="p">(</span><span class="n">j</span><span class="o">&gt;=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>	<span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">+</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span> <span class="c1">//使用水晶搭在高塔上 
+</span>			<span class="k">if</span><span class="p">(</span><span class="n">j</span><span class="o">&lt;=</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>	<span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">max</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">],</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">j</span><span class="p">);</span> <span class="c1">//使用水晶搭在矮塔上, 矮塔变高塔 
+</span>		<span class="p">}</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span>	<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Impossible"</span><span class="p">;</span> <span class="c1">//当最终建成高度为0时, 塔不存在 
+</span>	<span class="k">else</span>			<span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">d</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+]]></content>
+      <categories>
+        
+          <category> solution </category>
+        
+          <category> dp </category>
+        
+      </categories>
+      <tags>
+        
+          <tag> dp </tag>
+        
+      </tags>
+      <tags></tags>
+    </entry>
+  
+    <entry>
       <title><![CDATA[(luogu1043)数字游戏]]></title>
-      <url>/dp/2017/10/27/numgame/</url>
+      <url>/solution/dp/2017/10/27/numgame/</url>
       <content type="html"><![CDATA[<p>一个新的dp模版
 <!-- more --></p>
 
@@ -102,6 +170,8 @@
 ]]></content>
       <categories>
         
+          <category> solution </category>
+        
           <category> dp </category>
         
       </categories>
@@ -119,7 +189,7 @@
   
     <entry>
       <title><![CDATA[(luogu2701)巨大的牛棚(USACO5.3)]]></title>
-      <url>/dp/2017/10/27/maxsq/</url>
+      <url>/solution/dp/2017/10/27/maxsq/</url>
       <content type="html"><![CDATA[<p>最大正方形</p>
 
 <p>又一个dp的模板
@@ -173,6 +243,8 @@
 </code></pre></div></div>
 ]]></content>
       <categories>
+        
+          <category> solution </category>
         
           <category> dp </category>
         
@@ -416,7 +488,7 @@
   
     <entry>
       <title><![CDATA[拓扑排序及应用]]></title>
-      <url>/2017/10/25/topo-sort/</url>
+      <url>/note/%E5%9B%BE%E8%AE%BA/%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F/2017/10/25/topo-sort/</url>
       <content type="html"><![CDATA[<!-- more -->
 <h2 id="什么是拓扑排序">什么是拓扑排序:</h2>
 
@@ -491,6 +563,12 @@
 <p>这也是一般DAG上dp的优化思路</p>
 ]]></content>
       <categories>
+        
+          <category> note </category>
+        
+          <category> 图论 </category>
+        
+          <category> 拓扑排序 </category>
         
       </categories>
       <tags>
@@ -813,7 +891,7 @@
   
     <entry>
       <title><![CDATA[(luogu1010)幂次方]]></title>
-      <url>/%E5%88%86%E6%B2%BB/%E9%80%92%E5%BD%92/2017/10/24/pow/</url>
+      <url>/solution/%E5%88%86%E6%B2%BB/%E9%80%92%E5%BD%92/2017/10/24/pow/</url>
       <content type="html"><![CDATA[<!-- more -->
 
 <p>将一个数拆分成二进制, 对次数递归表示, 特殊处理0和2的情况</p>
@@ -853,6 +931,8 @@
 </code></pre></div></div>
 ]]></content>
       <categories>
+        
+          <category> solution </category>
         
           <category> 分治 </category>
         
